@@ -1,0 +1,29 @@
+{
+  "name": "osu-np",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Edqe14/osu-np.git"
+  },
+  "author": "Edqe_",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/Edqe14/osu-np/issues"
+  },
+  "homepage": "https://github.com/Edqe14/osu-np#readme",
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "dotenv": "^8.2.0",
+    "tmi.js": "^1.7.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.6"
+  }
+}
