@@ -5,14 +5,30 @@ require('dotenv').config({
 const config = Object.assign({
   enable: true,
   username: 'osu!np',
-  scDir: './sc/np.txt',
-  prefix: '!'
+  channels: [],
+  prefix: '!',
+  sc: {
+    proto: 'http',
+    host: 'localhost',
+    port: 20727,
+    watchTokens: [],
+    listeners: {
+      tokens: true,
+      mapData: true,
+      liveData: false
+    }
+  }
 }, require('./config.json'));
 
 const tmi = require('tmi.js');
 const readline = require('readline');
 const chalk = require('chalk');
 const { readdirSync } = require('fs');
+const camelCase = require('camelcase');
+
+const StreamCompanion = require('streamcompanion');
+const SC = new StreamCompanion(config.sc);
+SC.on('error', ({ ws, error }) => console.error(`"${camelCase(ws.type)}" websocket error: ${error.message}`));
 
 console.log(chalk.dim.bold.magenta('osu!np Twitch Bot v1'));
 console.log(chalk.dim.yellow('Type "help" to show help'));
@@ -36,7 +52,7 @@ const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
   removeHistoryDuplicates: true,
-  terminal: true,
+  terminal: false,
   prompt: chalk.dim.bold.white('» ')
 });
 
@@ -50,7 +66,7 @@ rl.on('line', (line) => {
     return rl.prompt();
   }
 
-  command.exec(module.exports.utils, 'cli', args, config);
+  command.exec(Object.assign(module.exports.CONSTRUCTOR, { type: 'cli' }), args, config);
   return rl.prompt();
 });
 
@@ -64,8 +80,11 @@ const client = new tmi.Client({
     username: config.username,
     password: process.env.TWITCH_TOKEN
   },
-  channels: [config.username]
+  channels: config.channels
 });
+client.commands = commands;
+client.aliases = aliases;
+
 client.connect().catch(console.error);
 client.on('message', (channel, tags, message, self) => {
   if (self) return;
@@ -75,7 +94,7 @@ client.on('message', (channel, tags, message, self) => {
   const command = commands.get(name) || commands.get(aliases.get(name));
   if (!command || (command && command.type.toLowerCase() === 'cli')) return;
 
-  command.exec(module.exports.utils, 'chat', args, config, channel, tags, message, self);
+  command.exec(Object.assign(module.exports.CONSTRUCTOR, { type: 'chat' }), args, config, channel, tags, message, self);
 });
 
 function parse (txt) {
@@ -85,11 +104,13 @@ function parse (txt) {
   return { args, name };
 }
 
-module.exports.utils = {
+module.exports.CONSTRUCTOR = {
   client,
-  commands,
-  aliases,
+  sc: SC,
   send (type, response, channel) {
+    if (typeof type === 'object') type = type.type;
+    if (!type) throw new TypeError('Invalid type');
+
     if (type === 'cli') console.log(response);
     else client.say(channel, response);
   }

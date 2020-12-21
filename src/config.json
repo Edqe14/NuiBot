@@ -1,6 +1,19 @@
 {
   "enable": true,
-  "username": "Edqe_",
-  "scDir": "D:/Apps/Stream\u0020Companion/Files/np.txt",
-  "prefix": "!"
+  "username": "nowplaying_",
+  "channels": ["Edqe_"],
+  "prefix": "!",
+  "sc": {
+    "proto": "http",
+    "host": "localhost",
+    "port": 20727,
+    "watchTokens": [
+      "totaltime"
+    ],
+    "listeners": {
+      "tokens": true,
+      "mapData": true,
+      "liveData": false
+    }
+  }
 }
