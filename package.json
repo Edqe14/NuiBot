@@ -22,6 +22,7 @@
     "camelcase": "^6.2.0",
     "chalk": "^4.1.0",
     "dotenv": "^8.2.0",
+    "node-watch": "^0.7.1",
     "streamcompanion": "^1.0.0",
     "tmi.js": "^1.7.0"
   },

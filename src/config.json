@@ -1,5 +1,4 @@
 {
-  "enable": true,
   "username": "nowplaying_",
   "channels": ["Edqe_"],
   "prefix": "!",

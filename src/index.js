@@ -2,29 +2,29 @@ const path = require('path');
 require('dotenv').config({
   path: path.join(__dirname, '.env')
 });
-const config = Object.assign({
-  enable: true,
-  username: 'osu!np',
-  channels: [],
-  prefix: '!',
-  sc: {
-    proto: 'http',
-    host: 'localhost',
-    port: 20727,
-    watchTokens: [],
-    listeners: {
-      tokens: true,
-      mapData: true,
-      liveData: false
-    }
-  }
-}, require('./config.json'));
 
 const tmi = require('tmi.js');
 const readline = require('readline');
 const chalk = require('chalk');
 const { readdirSync } = require('fs');
+const { createHash } = require('crypto');
+const watch = require('node-watch');
 const camelCase = require('camelcase');
+
+let config = buildConfig(require(path.join(__dirname, 'config.json')));
+watch(path.join(__dirname, 'config.json'), { recursive: true }, () => {
+  try {
+    const oldConfHash = createHash('md5').update(JSON.stringify(config)).digest('hex');
+    delete require.cache[require.resolve(path.join(__dirname, 'config.json'))];
+
+    const newConf = buildConfig(require(path.join(__dirname, 'config.json'), 'utf-8'));
+    const newConfHash = createHash('md5').update(JSON.stringify(newConf)).digest('hex');
+    if (oldConfHash === newConfHash) return;
+    config = newConf;
+  } catch (e) {
+    console.error(e);
+  }
+});
 
 const StreamCompanion = require('streamcompanion');
 const SC = new StreamCompanion(config.sc);
@@ -102,6 +102,26 @@ function parse (txt) {
   const name = (args.shift() || '').toLowerCase();
 
   return { args, name };
+}
+
+function buildConfig (obj) {
+  return Object.assign({
+    enable: true,
+    username: 'osu!np',
+    channels: [],
+    prefix: '!',
+    sc: {
+      proto: 'http',
+      host: 'localhost',
+      port: 20727,
+      watchTokens: [],
+      listeners: {
+        tokens: true,
+        mapData: true,
+        liveData: false
+      }
+    }
+  }, obj);
 }
 
 module.exports.CONSTRUCTOR = {
