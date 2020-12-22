@@ -1,6 +1,6 @@
 {
   "name": "osu-np",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Twitch chat bot originally made for osu! np using Stream Companion",
   "main": "src/index.js",
   "scripts": {
