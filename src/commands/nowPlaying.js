@@ -1,6 +1,6 @@
 module.exports = {
   name: 'nowPlaying',
-  usage: ['nowplaying'],
+  usage: 'nowplaying',
   description: 'Show osu! currently playing',
   aliases: ['np'],
   type: 'all',

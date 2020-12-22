@@ -8,7 +8,8 @@ const readline = require('readline');
 const chalk = require('chalk');
 const { readdirSync } = require('fs');
 const camelCase = require('camelcase');
-const { parse, buildConfig, _watchConfig } = require('./utils.js');
+const utils = require('./utils.js');
+const { parse, buildConfig, _watchConfig } = utils;
 const DotObj = require('./modules/DotObj.js');
 const Processer = require('./modules/Processer.js');
 
@@ -26,7 +27,14 @@ SC.on('error', ({ ws, error }) => console.error(`"${camelCase(ws.type)}" websock
 console.log(chalk.dim.bold.magenta('osu!np Twitch Bot v1'));
 console.log(chalk.dim.yellow('Type "help" to show help'));
 
+/**
+ * @type {Map<string, import('./typedef').Command>}
+ */
 const commands = new Map();
+
+/**
+ * @type {Map<string, string>}
+ */
 const aliases = new Map();
 const commandsDir = readdirSync(path.join(__dirname, 'commands'));
 commandsDir.filter(f => f.split('.').pop() === 'js').map(f => {
@@ -86,7 +94,7 @@ rl.on('line', (line) => {
     return rl.prompt();
   }
 
-  command.exec(new Processer(client, SC, 'cli', config, commands), args, config);
+  command.exec(new Processer(client, SC, 'cli', config, commands, utils), args, config);
   return rl.prompt();
 });
 
@@ -99,5 +107,5 @@ client.on('message', (channel, tags, message, self) => {
   const command = commands.get(name) || commands.get(aliases.get(name));
   if (!command || (command && command.type.toLowerCase() === 'cli')) return;
 
-  command.exec(new Processer(client, SC, 'chat', config, commands, channel, tags), args, message);
+  command.exec(new Processer(client, SC, 'chat', config, commands, utils, channel, tags), args, message);
 });

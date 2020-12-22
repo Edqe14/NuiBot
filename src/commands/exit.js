@@ -1,6 +1,6 @@
 module.exports = {
   name: 'exit',
-  usage: ['exit'],
+  usage: 'exit',
   description: 'Exit the program',
   aliases: [],
   type: 'cli',

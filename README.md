@@ -25,6 +25,7 @@ Twitch chat bot originally made for osu! np using [Stream Companion](https://git
 - ~~Make CONSTRUCTOR object schema to an class (OOP)~~
 - Make more commands
 - Fix watch config.json stop working when reloading error
+- Change text parser to lexure parser
 
 ## License
 

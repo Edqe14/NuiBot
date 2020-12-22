@@ -22,6 +22,7 @@
     "camelcase": "^6.2.0",
     "chalk": "^4.1.0",
     "dotenv": "^8.2.0",
+    "lexure": "^0.17.0",
     "node-watch": "^0.7.1",
     "object-path": "^0.11.5",
     "streamcompanion": "^1.0.0",

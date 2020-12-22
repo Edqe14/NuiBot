@@ -1,18 +1,19 @@
 const chalk = require('chalk');
 
+/**
+ * @type {import('../jsdoc.js').Command}
+ */
 module.exports = {
   name: 'help',
-  usage: ['help'],
+  usage: 'help',
   description: 'Help Menu',
   aliases: [],
   type: 'cli',
   exec (processer, args) {
     const cmd = args[0];
     if (!cmd) {
-      let count = 1;
-      return processer.commands.forEach((c) => {
-        processer.send(`${chalk.dim.gray(count + '.')} ${chalk.dim.bold.white(c.name)} - ${chalk.dim.yellow(c.description)}`);
-        count++;
+      return Array.from(processer.commands.values()).filter(c => !c.hidden).forEach((c, i) => {
+        processer.send(`${chalk.dim.gray(i + 1 + '.')} ${processer.utils.colorize(c.usage)} | ${chalk.dim.yellow(c.description)}`);
       });
     } else {
       const command = processer.commands.get(cmd) || processer.commands.get(processer.commands.aliases.get(cmd));

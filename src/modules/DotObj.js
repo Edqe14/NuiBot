@@ -1,12 +1,22 @@
 const objectPath = require('object-path');
 const { EventEmitter } = require('events');
 
+/**
+ * Create DotObj class instance
+ * @class
+ */
 module.exports = class DotObj extends EventEmitter {
+  /**
+   * @param {Object} o Initial object
+   */
   constructor (o) {
     super();
     Object.assign(this, o, Object.freeze(objectPath(this.watch())));
   }
 
+  /**
+   * Watch for value changes
+   */
   watch () {
     const t = this;
     return new Proxy(this, {

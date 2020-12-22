@@ -2,6 +2,10 @@ const { Client } = require('tmi.js');
 const StreamCompanion = require('streamcompanion');
 const DotObj = require('./DotObj.js');
 
+/**
+ * Create Processer class instance
+ * @class
+ */
 module.exports = class Processer {
   /**
    * @param {Client} client tmi.js Client instance
@@ -9,10 +13,11 @@ module.exports = class Processer {
    * @param {'chat'|'cli'|'all'} type Runner type
    * @param {DotObj} config Config
    * @param {Map} commands Commands map
+   * @param {Object} utils Utils object
    * @param {string=} channel Channel name (type === chat)
-   * @param {object=} tags Message tags
+   * @param {Object=} tags Message tags
    */
-  constructor (client, sc, type, config, commands, channel, tags) {
+  constructor (client, sc, type, config, commands, utils, channel, tags) {
     if (!(client instanceof Client)) throw new TypeError('Client is not instance of tmi.Client');
     if (!(sc instanceof StreamCompanion)) throw new TypeError('sc is not instance of StreamCompanion');
     if (!type || !['chat', 'cli', 'all'].includes(type)) throw new Error(`Invalid type "${type}" in type`);
@@ -24,12 +29,17 @@ module.exports = class Processer {
     this.client = client;
     this.config = config;
     this.commands = commands;
+    this.utils = utils;
     this.sc = sc;
     this.type = type;
     this.channel = channel;
     this.tags = tags;
   }
 
+  /**
+   * Send response
+   * @param {*} response
+   */
   send (response) {
     if (this.type === 'cli') return console.log(response);
     return this.client.say(this.channel, response);

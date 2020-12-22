@@ -2,7 +2,7 @@ const chalk = require('chalk');
 
 module.exports = {
   name: 'prefix',
-  usage: ['prefix [newprefix]'],
+  usage: 'prefix [newprefix]',
   description: 'Show or set new prefix',
   aliases: [],
   type: 'cli',
