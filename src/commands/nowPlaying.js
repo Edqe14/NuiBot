@@ -1,3 +1,6 @@
+/**
+ * @type {import('../typedef').Command}
+ */
 module.exports = {
   name: 'nowPlaying',
   usage: 'nowplaying',

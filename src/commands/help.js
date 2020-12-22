@@ -1,7 +1,7 @@
 const chalk = require('chalk');
 
 /**
- * @type {import('../jsdoc.js').Command}
+ * @type {import('../typedef').Command}
  */
 module.exports = {
   name: 'help',

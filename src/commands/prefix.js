@@ -1,5 +1,8 @@
 const chalk = require('chalk');
 
+/**
+ * @type {import('../typedef').Command}
+ */
 module.exports = {
   name: 'prefix',
   usage: 'prefix [newprefix]',
