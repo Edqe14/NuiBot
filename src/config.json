@@ -1,7 +1,9 @@
 {
   "username": "nowplaying_",
-  "channels": ["Edqe_"],
-  "prefix": "!",
+  "channels": [
+    "#edqe_"
+  ],
+  "prefix": "-",
   "sc": {
     "proto": "http",
     "host": "localhost",
@@ -14,5 +16,6 @@
       "mapData": true,
       "liveData": false
     }
-  }
+  },
+  "enable": true
 }

@@ -7,24 +7,16 @@ const tmi = require('tmi.js');
 const readline = require('readline');
 const chalk = require('chalk');
 const { readdirSync } = require('fs');
-const { createHash } = require('crypto');
-const watch = require('node-watch');
 const camelCase = require('camelcase');
+const DotObj = require('./modules/DotObj.js');
+const { parse, buildConfig, _watchConfig } = require('./utils.js');
 
-let config = buildConfig(require(path.join(__dirname, 'config.json')));
-watch(path.join(__dirname, 'config.json'), { recursive: true }, () => {
-  try {
-    const oldConfHash = createHash('md5').update(JSON.stringify(config)).digest('hex');
-    delete require.cache[require.resolve(path.join(__dirname, 'config.json'))];
-
-    const newConf = buildConfig(require(path.join(__dirname, 'config.json'), 'utf-8'));
-    const newConfHash = createHash('md5').update(JSON.stringify(newConf)).digest('hex');
-    if (oldConfHash === newConfHash) return;
-    config = newConf;
-  } catch (e) {
-    console.error(e);
-  }
+const config = new DotObj(buildConfig(require(path.join(__dirname, 'config.json')), path.join(__dirname, 'config.json'))).watch();
+config.on('error', (r, e) => {
+  if (r.message === 'reload') return console.error(chalk.dim.red('Failed to reload config.json!'), e.message);
+  console.error(r);
 });
+_watchConfig(config);
 
 const StreamCompanion = require('streamcompanion');
 const SC = new StreamCompanion(config.sc);
@@ -57,8 +49,22 @@ const rl = readline.createInterface({
 });
 
 rl.prompt();
+
+let exit = false;
+process.on('SIGINT', (code) => {
+  if (!exit) {
+    exit = true;
+    console.log(chalk.dim.bold.yellow('Please press "CTRL + C" or type "exit" again to exit.'));
+    if (code !== 'exit') return rl.prompt();
+    return;
+  }
+  process.exit(1);
+});
+rl.on('SIGINT', () => process.emit('SIGINT'));
+
 rl.on('line', (line) => {
   const { args, name } = parse(line);
+  if (exit && name !== 'exit') exit = false;
 
   const command = commands.get(name) || commands.get(aliases.get(name));
   if (!command || (command && command.type.toLowerCase() === 'chat')) {
@@ -96,33 +102,6 @@ client.on('message', (channel, tags, message, self) => {
 
   command.exec(Object.assign(module.exports.CONSTRUCTOR, { type: 'chat' }), args, config, channel, tags, message, self);
 });
-
-function parse (txt) {
-  const args = txt.split(' ');
-  const name = (args.shift() || '').toLowerCase();
-
-  return { args, name };
-}
-
-function buildConfig (obj) {
-  return Object.assign({
-    enable: true,
-    username: 'osu!np',
-    channels: [],
-    prefix: '!',
-    sc: {
-      proto: 'http',
-      host: 'localhost',
-      port: 20727,
-      watchTokens: [],
-      listeners: {
-        tokens: true,
-        mapData: true,
-        liveData: false
-      }
-    }
-  }, obj);
-}
 
 module.exports.CONSTRUCTOR = {
   client,
