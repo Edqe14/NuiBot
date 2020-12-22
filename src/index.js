@@ -8,8 +8,9 @@ const readline = require('readline');
 const chalk = require('chalk');
 const { readdirSync } = require('fs');
 const camelCase = require('camelcase');
-const DotObj = require('./modules/DotObj.js');
 const { parse, buildConfig, _watchConfig } = require('./utils.js');
+const DotObj = require('./modules/DotObj.js');
+const Processer = require('./modules/Processer.js');
 
 const config = new DotObj(buildConfig(require(path.join(__dirname, 'config.json')), path.join(__dirname, 'config.json'))).watch();
 config.on('error', (r, e) => {
@@ -48,6 +49,20 @@ const rl = readline.createInterface({
   prompt: chalk.dim.bold.white('» ')
 });
 
+const client = new tmi.Client({
+  options: { debug: false, messagesLogLevel: 'info' },
+  connection: {
+    reconnect: true,
+    secure: true
+  },
+  identity: {
+    username: config.username,
+    password: process.env.TWITCH_TOKEN
+  },
+  channels: config.channels
+});
+commands.aliases = aliases;
+
 rl.prompt();
 
 let exit = false;
@@ -61,7 +76,6 @@ process.on('SIGINT', (code) => {
   process.exit(1);
 });
 rl.on('SIGINT', () => process.emit('SIGINT'));
-
 rl.on('line', (line) => {
   const { args, name } = parse(line);
   if (exit && name !== 'exit') exit = false;
@@ -72,24 +86,9 @@ rl.on('line', (line) => {
     return rl.prompt();
   }
 
-  command.exec(Object.assign(module.exports.CONSTRUCTOR, { type: 'cli' }), args, config);
+  command.exec(new Processer(client, SC, 'cli', config, commands), args, config);
   return rl.prompt();
 });
-
-const client = new tmi.Client({
-  options: { debug: false, messagesLogLevel: 'info' },
-  connection: {
-    reconnect: true,
-    secure: true
-  },
-  identity: {
-    username: config.username,
-    password: process.env.TWITCH_TOKEN
-  },
-  channels: config.channels
-});
-client.commands = commands;
-client.aliases = aliases;
 
 client.connect().catch(console.error);
 client.on('message', (channel, tags, message, self) => {
@@ -100,17 +99,5 @@ client.on('message', (channel, tags, message, self) => {
   const command = commands.get(name) || commands.get(aliases.get(name));
   if (!command || (command && command.type.toLowerCase() === 'cli')) return;
 
-  command.exec(Object.assign(module.exports.CONSTRUCTOR, { type: 'chat' }), args, config, channel, tags, message, self);
+  command.exec(new Processer(client, SC, 'chat', config, commands, channel, tags), args, message);
 });
-
-module.exports.CONSTRUCTOR = {
-  client,
-  sc: SC,
-  send (type, response, channel) {
-    if (typeof type === 'object') type = type.type;
-    if (!type) throw new TypeError('Invalid type');
-
-    if (type === 'cli') console.log(response);
-    else client.say(channel, response);
-  }
-};

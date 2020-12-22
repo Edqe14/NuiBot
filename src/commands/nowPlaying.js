@@ -4,8 +4,8 @@ module.exports = {
   description: 'Show osu! currently playing',
   aliases: ['np'],
   type: 'all',
-  exec ({ type, send, sc }, _, __, channel) {
-    const np = sc.getData('np');
-    return send(type, np, channel);
+  exec (processer) {
+    const np = processer.sc.getData('np') || 'none';
+    return processer.send(np);
   }
 };
