@@ -10,6 +10,7 @@ Twitch chat bot originally made for osu! np using [Stream Companion](https://git
  1. [Stream Companion](https://github.com/Piotrekol/StreamCompanion)
  2. [StreamCompanion (node-sc)](https://npmjs.com/package/streamcompanion)
  3. [DotObj](https://github.com/Edqe14/osu-np/blob/main/src/modules/DotObj.js)
+ 4. [tmi.js](https://npmjs.com/package/tmi.js)
 
 ## Features
 
