@@ -1,6 +1,20 @@
 const { Client } = require('tmi.js');
 const StreamCompanion = require('streamcompanion');
+const { BanchoClient } = require('bancho.js');
 const DotObj = require('./DotObj.js');
+
+/**
+ * @typedef {object} Struct
+ * @property {Client} client tmi.js Client instance
+ * @property {StreamCompanion} sc node-sc instance
+ * @property {'chat'|'cli'|'bancho'|'all'} type Runner type
+ * @property {DotObj} config Config
+ * @property {Map} commands Commands map
+ * @property {Object} utils Utils object
+ * @property {string=} channel Channel name (type === chat)
+ * @property {object=} tags Message tags
+ * @property {object} message
+ */
 
 /**
  * Create Processer class instance
@@ -8,18 +22,23 @@ const DotObj = require('./DotObj.js');
  */
 module.exports = class Processer {
   /**
-   * @param {Client} client tmi.js Client instance
-   * @param {StreamCompanion} sc node-sc instance
-   * @param {'chat'|'cli'|'all'} type Runner type
-   * @param {DotObj} config Config
-   * @param {Map} commands Commands map
-   * @param {Object} utils Utils object
-   * @param {string=} channel Channel name (type === chat)
-   * @param {Object=} tags Message tags
+   * @param {Struct} args0
    */
-  constructor (client, sc, type, config, commands, utils, channel, tags) {
+  constructor ({
+    client,
+    sc,
+    bancho,
+    type,
+    config,
+    commands,
+    utils,
+    channel,
+    tags,
+    message
+  }) {
     if (!(client instanceof Client)) throw new TypeError('Client is not instance of tmi.Client');
-    if (!(sc instanceof StreamCompanion)) throw new TypeError('sc is not instance of StreamCompanion');
+    if (!(sc instanceof StreamCompanion)) throw new TypeError('SC is not instance of StreamCompanion');
+    if (!(bancho instanceof BanchoClient)) throw new TypeError('Bancho is not instance of BanchoClient');
     if (!type || !['chat', 'cli', 'all'].includes(type)) throw new Error(`Invalid type "${type}" in type`);
     if (!(config instanceof DotObj)) throw new TypeError('config is  not instance of DotObj');
     if (!(commands instanceof Map)) throw new TypeError('commands is not instance of Map');
@@ -27,13 +46,15 @@ module.exports = class Processer {
     if (this.type === 'chat' && !tags) throw new TypeError('Invalid message tag');
 
     this.client = client;
+    this.sc = sc;
+    this.bancho = bancho;
     this.config = config;
     this.commands = commands;
     this.utils = utils;
-    this.sc = sc;
     this.type = type;
     this.channel = channel;
     this.tags = tags;
+    this.message = message;
   }
 
   /**
@@ -42,6 +63,7 @@ module.exports = class Processer {
    */
   send (response) {
     if (this.type === 'cli') return console.log(response);
+    if (this.type === 'bancho') return this.message.user.sendMessage(response);
     return this.client.say(this.channel, response);
   }
 };

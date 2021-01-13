@@ -19,13 +19,16 @@
   },
   "homepage": "https://github.com/Edqe14/osu-np#readme",
   "dependencies": {
+    "bancho.js": "^0.9.7",
     "camelcase": "^6.2.0",
     "chalk": "^4.1.0",
     "dotenv": "^8.2.0",
+    "extends-classes": "^1.0.5",
     "lexure": "^0.17.0",
+    "node-osu": "^2.2.0",
     "node-watch": "^0.7.1",
     "object-path": "^0.11.5",
-    "streamcompanion": "^1.0.0",
+    "streamcompanion": "^1.1.2",
     "tmi.js": "^1.7.0"
   },
   "devDependencies": {

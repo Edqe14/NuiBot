@@ -84,10 +84,38 @@ module.exports = {
     return inputs.join(' ');
   },
   /**
+   * Handle exit
+   * @private
+   * @param {import('readline').Interface} rl
+   */
+  _handleExit (rl) {
+    let exit = false;
+    process.on('SIGINT', (code) => {
+      if (!exit) {
+        exit = true;
+        console.log(chalk.dim.bold.yellow('Please press "CTRL + C" or type "exit" again to exit.'));
+        if (code !== 'exit') return rl.prompt();
+        return;
+      }
+      process.exit(1);
+    });
+    rl.on('SIGINT', () => process.emit('SIGINT'));
+    rl.on('line', (line) => {
+      const { name } = module.exports.parse(line);
+      if (exit && name !== 'exit') exit = false;
+    });
+  },
+  /**
+   * Watch config file
    * @private
    * @param {import('./typedef').DotConfig} config Config
    */
   _watchConfig (config) {
+    config.on('error', (r, e) => {
+      if (r.message === 'reload') return console.error(chalk.dim.red('Failed to reload config.json!'), e.message);
+      console.error(r);
+    });
+
     let lock = false;
     config.on('change', async () => {
       if (lock) return;

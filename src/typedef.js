@@ -43,7 +43,7 @@ const { Chalk } = require('chalk');
  *       mapData: boolean,
  *       liveData: boolean
  *    }
- * }} sc
+ * }} sc StreamCompanion config
  * 
  * @typedef {Object} Utils
  * @property {(ms: number = 500) => Promise<any>} sleep Sleep function

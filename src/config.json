@@ -1,9 +1,9 @@
 {
-  "username": "nowplaying_",
+  "username": "Edqe_",
   "channels": [
     "#edqe_"
   ],
-  "prefix": "-",
+  "prefix": "!",
   "sc": {
     "proto": "http",
     "host": "localhost",
@@ -17,5 +17,8 @@
       "liveData": false
     }
   },
-  "enable": true
+  "enable": true,
+  "osu": {
+    "username": "Edqe_"
+  }
 }
