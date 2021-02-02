@@ -16,7 +16,7 @@ module.exports = (config) => {
       username: config.username,
       password: process.env.TWITCH_TOKEN
     },
-    channels: config.channels
+    channels: config.channels.map(a => a[0])
   });
   client.connect().catch(console.error);
 

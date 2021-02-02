@@ -13,5 +13,5 @@ _watchConfig(config);
 
 module.exports = new (require('./modules/Client.js'))(config);
 
-console.log(chalk.dim.bold.magenta('osu!np Twitch Bot v1'));
+console.log(chalk.dim.bold.magenta('Nui v1'));
 console.log(chalk.dim.yellow('Type "help" to show help'));

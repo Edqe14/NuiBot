@@ -21,13 +21,14 @@ Twitch chat bot made for osu! related stuff
  4. Bancho connection using IRC connection using [bancho.js](https://npmjs.com/package/bancho.js)
  5. Module/external commands
  6. Command type (chat, cli, all)
+ 7. Map request
 
 ## To-do
 
 - ~~Make CONSTRUCTOR object schema to an class (OOP)~~
 - Make more commands
 - Fix watch config.json stop working when reloading error
-- Change text parser to lexure parser
+- ~~Change text parser to lexure parser~~
 
 ## License
 

@@ -19,6 +19,8 @@ module.exports = class Client extends EventEmitter {
     super();
 
     this.config = config;
+    if (this.config.verbose) process.env.NODE_ENV = 'development';
+    else process.env.NODE_ENV = 'prod';
 
     const SC = this.sc = new StreamCompanion(config.sc);
     SC.on('error', ({ ws, error }) => console.error(`"${camelCase(ws.type)}" websocket error: ${error.message}`));
@@ -187,5 +189,10 @@ module.exports = class Client extends EventEmitter {
       this.emit('command', processer, args, config);
       command.exec(processer, args, config);
     });
+  }
+
+  log (...msg) {
+    if (process.env.NODE_ENV !== 'development') return;
+    console.log(...msg);
   }
 };

@@ -47,7 +47,8 @@ module.exports = {
           tokens: true,
           mapData: true,
           liveData: false
-        }
+        },
+        initializeAutomatically: true
       }
     }, obj);
   },
@@ -117,8 +118,19 @@ module.exports = {
     });
 
     let lock = false;
+    const waitUnlock = () => {
+      return new Promise((resolve) => {
+        const interval = setInterval(() => {
+          if (!lock) {
+            clearInterval(interval);
+            return resolve();
+          }
+        }, 500);
+      });
+    };
+
     config.on('change', async () => {
-      if (lock) return;
+      if (lock) await waitUnlock();
 
       lock = true;
       const confCopy = Object.assign({}, config);
@@ -131,7 +143,7 @@ module.exports = {
       lock = false;
     });
     watch(config._dir, { recursive: true }, async () => {
-      if (lock) return;
+      if (lock) await waitUnlock();
 
       lock = true;
       const oldConfHash = createHash('md5').update(JSON.stringify(config)).digest('hex');

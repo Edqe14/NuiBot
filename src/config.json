@@ -1,7 +1,7 @@
 {
   "username": "Edqe_",
   "channels": [
-    "#edqe_"
+    ["#edqe_", "Edqe_"]
   ],
   "prefix": "!",
   "sc": {
@@ -17,8 +17,5 @@
       "liveData": false
     }
   },
-  "enable": true,
-  "osu": {
-    "username": "Edqe_"
-  }
+  "verbose": true
 }

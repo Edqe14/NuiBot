@@ -8,8 +8,6 @@ const api = new osu.Api(process.env.OSU_API_KEY, {
  * @param {import('../modules/Client')} client
  */
 module.exports = (client) => {
-  const user = client.bancho.getUser(client.config.osu.username);
-
   client.on('message', async (message) => {
     if (message.type === 'chat') {
       if (message.self) return;
@@ -18,6 +16,7 @@ module.exports = (client) => {
       const id = beatmapUrl[0].slice(-7).replace(/\//gm, '');
       if (!id || !id.length) return;
 
+      const user = client.bancho.getUser(client.config.channels.find(a => a[0].toLowerCase().includes(message.channel.toLowerCase()))[1]);
       const map = (await api.getBeatmaps({
         b: id
       }))[0];
@@ -25,7 +24,7 @@ module.exports = (client) => {
       const res = `${map.difficulty.rating.toFixed(2)}★ ${map.artist} - ${map.title} [${map.version}] by ${map.creator}`;
       client.tmi.say(message.channel, res);
 
-      await user.sendMessage(`${message.tags.username}: ${beatmapUrl[0]}`);
+      await user.sendMessage(`[${beatmapUrl[0]} ${map.title} [${map.version}]] Requested by ${message.tags['display-name'] ?? message.tags.username}`);
     }
   });
 };

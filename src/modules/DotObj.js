@@ -7,7 +7,7 @@ const { EventEmitter } = require('events');
  */
 module.exports = class DotObj extends EventEmitter {
   /**
-   * @param {Object} o Initial object
+   * @param {object} o Initial object
    */
   constructor (o) {
     super();
